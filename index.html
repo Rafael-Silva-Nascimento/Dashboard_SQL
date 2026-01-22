@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard SQL | Cacique Home Center</title>
+    <title>Dashboard Cacique | BI Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -12,76 +12,29 @@
             --cacique-dark: #121212;
             --cacique-sidebar: #1e1e1e;
             --cacique-red: #e74c3c;
-            --bg-body: #f1f2f6;
         }
 
-        body { 
-            background-color: var(--cacique-dark); 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: #fff;
-        }
+        body { background-color: var(--cacique-dark); font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; }
 
-        /* Sidebar Estilizada */
-        .sidebar { 
-            background: var(--cacique-sidebar); 
-            min-height: 100vh; 
-            padding: 30px 20px; 
-            border-right: 1px solid #333;
-        }
+        .sidebar { background: var(--cacique-sidebar); min-height: 100vh; padding: 30px 20px; border-right: 1px solid #333; }
+        .brand-area { text-align: center; margin-bottom: 30px; }
+        .brand-name { color: var(--cacique-yellow); font-weight: 900; font-size: 1.6rem; margin: 0; letter-spacing: -1px; }
+        .brand-sub { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
 
-        .brand-area { text-align: center; margin-bottom: 40px; }
-        .brand-name { 
-            color: var(--cacique-yellow); 
-            font-weight: 900; 
-            letter-spacing: -1px; 
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        .brand-sub { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        .card { border: none; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; transition: 0.3s; }
+        .card h5 { font-size: 0.8rem; font-weight: 800; color: #333; text-transform: uppercase; border-bottom: 3px solid var(--cacique-yellow); display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
 
-        /* Cards do Dashboard */
-        .card { 
-            border: none; 
-            border-radius: 15px; 
-            background: #ffffff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-        .card:hover { transform: translateY(-5px); }
-
-        .card h5 { 
-            font-size: 0.85rem; 
-            font-weight: 800; 
-            color: #333; 
-            text-transform: uppercase; 
-            border-bottom: 2px solid var(--cacique-yellow);
-            display: inline-block;
-            margin-bottom: 20px;
-            padding-bottom: 5px;
-        }
-
-        /* KPIs Estilizados */
         .kpi-card { border-top: 5px solid var(--cacique-yellow); }
         .kpi-card.danger { border-top-color: var(--cacique-red); }
-        .kpi-title { font-size: 0.75rem; font-weight: 700; color: #666; margin-bottom: 10px; }
-        .kpi-value { font-size: 1.8rem; font-weight: 900; color: #121212; }
+        .kpi-title { font-size: 0.7rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        .kpi-value { font-size: 1.6rem; font-weight: 900; color: #121212; line-height: 1.2; }
 
-        /* Filtros */
-        .filter-group { margin-bottom: 20px; }
-        .filter-group label { font-size: 0.7rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 8px; display: block; }
-        .form-select, .form-control { 
-            background-color: #2d2d2d; 
-            border: 1px solid #444; 
-            color: #fff; 
-            font-size: 0.85rem;
-            border-radius: 8px;
-        }
-        .form-select:focus { background-color: #3d3d3d; color: #fff; border-color: var(--cacique-yellow); box-shadow: none; }
+        .filter-group { margin-bottom: 15px; }
+        .filter-group label { font-size: 0.65rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 5px; display: block; text-transform: uppercase; }
+        .form-select, .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; font-size: 0.8rem; border-radius: 8px; }
+        .form-select:focus, .form-control:focus { background-color: #333; color: #fff; border-color: var(--cacique-yellow); box-shadow: none; }
 
-        .chart-container { position: relative; height: 260px; width: 100%; }
-        
-        /* Ajuste para o scroll da sidebar */
+        .chart-container { position: relative; height: 240px; width: 100%; }
         .sticky-sidebar { position: sticky; top: 20px; }
     </style>
 </head>
@@ -93,26 +46,41 @@
             <div class="sticky-sidebar">
                 <div class="brand-area">
                     <h1 class="brand-name">CACIQUE</h1>
-                    <span class="brand-sub">Home Center | SQL</span>
+                    <span class="brand-sub">Home Center | Logística</span>
                 </div>
                 
                 <div class="filter-group">
-                    <label>ARQUIVO SQL.CSV</label>
+                    <label>Importar SQL.csv</label>
                     <input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv">
                 </div>
 
                 <div id="controls" style="display: none;">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="filter-group">
+                                <label>Início</label>
+                                <input type="date" id="dateStart" class="form-control form-control-sm" onchange="applyFilters()">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="filter-group">
+                                <label>Fim</label>
+                                <input type="date" id="dateEnd" class="form-control form-control-sm" onchange="applyFilters()">
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="filter-group">
-                        <label>UNIDADE / LOJA</label>
+                        <label>Filtrar Loja</label>
                         <select id="filterLoja" class="form-select form-select-sm" onchange="applyFilters()"></select>
                     </div>
 
                     <div class="filter-group">
-                        <label>MOTIVO DA OCORRÊNCIA</label>
+                        <label>Filtrar Motivo</label>
                         <select id="filterMotivo" class="form-select form-select-sm" onchange="applyFilters()"></select>
                     </div>
                     
-                    <button class="btn btn-sm btn-outline-warning w-100 mt-3" onclick="resetFilters()" style="font-size: 0.7rem; font-weight: bold;">LIMPAR FILTROS</button>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-2" onclick="resetFilters()">LIMPAR TUDO</button>
                 </div>
             </div>
         </nav>
@@ -121,26 +89,26 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="card kpi-card p-3 text-center">
-                        <div class="kpi-title">TOTAL OCORRÊNCIAS</div>
+                        <div class="kpi-title">Ocorrências</div>
                         <div id="kpiTotal" class="kpi-value">-</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card kpi-card p-3 text-center">
-                        <div class="kpi-title">MOTIVO PRINCIPAL</div>
-                        <div id="kpiMotivo" class="kpi-value" style="font-size: 0.9rem; height: 45px; display: flex; align-items: center; justify-content: center;">-</div>
+                        <div class="kpi-title">Motivo Principal</div>
+                        <div id="kpiMotivo" class="kpi-value" style="font-size: 0.8rem; height: 38px; display: flex; align-items: center; justify-content: center;">-</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card kpi-card p-3 text-center">
-                        <div class="kpi-title">UNIDADE MAIS ATIVA</div>
-                        <div id="kpiLoja" class="kpi-value" style="font-size: 0.9rem; height: 45px; display: flex; align-items: center; justify-content: center;">-</div>
+                        <div class="kpi-title">Loja Crítica</div>
+                        <div id="kpiLoja" class="kpi-value" style="font-size: 0.8rem; height: 38px; display: flex; align-items: center; justify-content: center;">-</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card kpi-card danger p-3 text-center">
-                        <div class="kpi-title" style="color: var(--cacique-red);">ERROS DE VENDA</div>
-                        <div id="kpiErros" class="kpi-value" style="color: var(--cacique-red);">-</div>
+                        <div class="kpi-title" style="color:var(--cacique-red)">Erros de Venda</div>
+                        <div id="kpiErros" class="kpi-value" style="color:var(--cacique-red)">-</div>
                     </div>
                 </div>
             </div>
@@ -154,22 +122,19 @@
                 </div>
                 <div class="col-md-4">
                     <div class="card p-4">
-                        <h5>Distribuição por Motivo</h5>
+                        <h5>Distribuição de Motivos</h5>
                         <div class="chart-container"><canvas id="canvasPie"></canvas></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <div class="card p-4">
-                        <h5>Ocorrências por Unidade</h5>
+                        <h5>Volume por Unidade</h5>
                         <div class="chart-container"><canvas id="canvasStore"></canvas></div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-4" style="border-right: 8px solid var(--cacique-red);">
-                        <h5>Ranking: Erro de Venda por Vendedor</h5>
+                    <div class="card p-4" style="border-right: 8px solid var(--cacique-red)">
+                        <h5 style="color:var(--cacique-red)">Ranking: Erros por Vendedor</h5>
                         <div class="chart-container"><canvas id="canvasSellerError"></canvas></div>
                     </div>
                 </div>
@@ -182,21 +147,29 @@
 let fullData = [];
 let charts = {};
 
-// Função de Correção de Acentos e Textos
 function fixText(text) {
     if (!text) return "";
-    return text.toString().trim()
-        .replace(/RECLAMA\?+O/gi, "RECLAMAÇÃO")
-        .replace(/SOLICITA\?+O/gi, "SOLICITAÇÃO")
-        .replace(/INFORMA\?+O/gi, "INFORMAÇÃO")
-        .replace(/\?+/g, " ");
+    let t = text.toString().trim();
+    t = t.replace(/RECLAMA[\?]+O/gi, "RECLAMAÇÃO")
+         .replace(/SOLICITA[\?]+O/gi, "SOLICITAÇÃO")
+         .replace(/INFORMA[\?]+O/gi, "INFORMAÇÃO")
+         .replace(/LIGA[\?]+ES/gi, "LIGAÇÕES")
+         .replace(/ATEN[\?]+O/gi, "ATENÇÃO")
+         .replace(/N[\?]+O/gi, "NÃO")
+         .replace(/[\?]+/g, " "); 
+    return t;
+}
+
+function parseDate(str) {
+    if(!str) return null;
+    const p = str.split('/');
+    return p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : null;
 }
 
 document.getElementById('csvInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsText(file, "ISO-8859-1");
-    
     reader.onload = function(event) {
         Papa.parse(event.target.result, {
             header: true, delimiter: ";", skipEmptyLines: true,
@@ -218,107 +191,91 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
 });
 
 function populateFilters(data) {
-    const lojas = [...new Set(data.map(item => item.LOJA))].filter(x => x).sort();
-    const motivos = [...new Set(data.map(item => item['RECLAMAÇÃO/SOLICITAÇÃO'] || "OUTROS"))].filter(x => x).sort();
+    const lojas = [...new Set(data.map(i => i.LOJA))].filter(x => x).sort();
+    const motivos = [...new Set(data.map(i => i['RECLAMAÇÃO/SOLICITAÇÃO']))].filter(x => x).sort();
+    
     fillSelect('filterLoja', lojas, "TODAS AS LOJAS");
     fillSelect('filterMotivo', motivos, "TODOS OS MOTIVOS");
+    
+    const dates = data.map(i => parseDate(i.DATA)).filter(d => d instanceof Date && !isNaN(d));
+    if(dates.length) {
+        const min = new Date(Math.min(...dates)).toISOString().split('T')[0];
+        const max = new Date(Math.max(...dates)).toISOString().split('T')[0];
+        document.getElementById('dateStart').value = min;
+        document.getElementById('dateEnd').value = max;
+    }
 }
 
-function fillSelect(id, list, firstOption) {
+function fillSelect(id, list, first) {
     const s = document.getElementById(id);
-    s.innerHTML = `<option value="all">${firstOption}</option>`;
-    list.forEach(i => s.innerHTML += `<option value="${i}">${i}</option>`);
+    s.innerHTML = `<option value="all">${first}</option>` + list.map(i => `<option value="${i}">${i}</option>`).join('');
 }
 
 function applyFilters() {
     const lSel = document.getElementById('filterLoja').value;
     const mSel = document.getElementById('filterMotivo').value;
+    const dStartStr = document.getElementById('dateStart').value;
+    const dEndStr = document.getElementById('dateEnd').value;
+    
+    const dStart = dStartStr ? new Date(dStartStr + "T00:00:00") : null;
+    const dEnd = dEndStr ? new Date(dEndStr + "T23:59:59") : null;
+
     const filtered = fullData.filter(row => {
+        const rDate = parseDate(row.DATA);
+        const matchDate = (!rDate || (!dStart || rDate >= dStart) && (!dEnd || rDate <= dEnd));
         const matchL = (lSel === 'all' || row.LOJA === lSel);
-        const matchM = (mSel === 'all' || (row['RECLAMAÇÃO/SOLICITAÇÃO'] || "OUTROS") === mSel);
-        return matchL && matchM;
+        const matchM = (mSel === 'all' || row['RECLAMAÇÃO/SOLICITAÇÃO'] === mSel);
+        return matchDate && matchL && matchM;
     });
     renderDashboard(filtered);
 }
 
 function resetFilters() {
-    document.getElementById('filterLoja').value = 'all';
-    document.getElementById('filterMotivo').value = 'all';
+    populateFilters(fullData);
     applyFilters();
 }
 
 function renderDashboard(data) {
-    const counts = { date: {}, type: {}, store: {}, sellerError: {}, totalErrosVenda: 0 };
-
+    const counts = { date: {}, type: {}, store: {}, sellerError: {}, totalErros: 0 };
     data.forEach(row => {
-        const d = row.DATA || "";
-        const mot = row['RECLAMAÇÃO/SOLICITAÇÃO'] || "OUTROS";
-        const lj = row.LOJA || "N/A";
-        const vend = row.VENDEDOR || "N/A";
-        const erroVal = row['ERRO_VENDA?'] || row['ERRO_VENDA'] || "";
-        const isErro = erroVal.toUpperCase().includes("SIM");
-
-        if (d) counts.date[d] = (counts.date[d] || 0) + 1;
-        if (mot) counts.type[mot] = (counts.type[mot] || 0) + 1;
-        if (lj) counts.store[lj] = (counts.store[lj] || 0) + 1;
-        if (isErro) {
-            counts.sellerError[vend] = (counts.sellerError[vend] || 0) + 1;
-            counts.totalErrosVenda++;
-        }
+        const d = row.DATA, mot = row['RECLAMAÇÃO/SOLICITAÇÃO'] || "OUTROS", lj = row.LOJA || "N/A", vend = row.VENDEDOR || "N/A";
+        const isErro = (row['ERRO_VENDA?'] || row['ERRO_VENDA'] || "").toUpperCase().includes("SIM");
+        if(d) counts.date[d] = (counts.date[d] || 0) + 1;
+        counts.type[mot] = (counts.type[mot] || 0) + 1;
+        counts.store[lj] = (counts.store[lj] || 0) + 1;
+        if(isErro) { counts.sellerError[vend] = (counts.sellerError[vend] || 0) + 1; counts.totalErros++; }
     });
 
     Object.values(charts).forEach(c => c && c.destroy());
 
-    // Configuração de Cores Cacique
-    const yellowPrimary = '#ffdb00';
-    const darkPrimary = '#121212';
-    const redPrimary = '#e74c3c';
-
-    // 1. Linha Temporal
-    const sortedDates = Object.keys(counts.date).sort((a,b) => {
-        const pa = a.split('/'); const pb = b.split('/');
-        return new Date(pa[2], pa[1]-1, pa[0]) - new Date(pb[2], pb[1]-1, pb[0]);
-    });
+    const sortedDates = Object.keys(counts.date).sort((a,b) => parseDate(a) - parseDate(b));
     charts.time = new Chart(document.getElementById('canvasTime'), {
         type: 'line',
-        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: darkPrimary, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointBackgroundColor: yellowPrimary }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: '#121212', backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4 }] },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 
-    // 2. Pizza
     charts.pie = new Chart(document.getElementById('canvasPie'), {
         type: 'doughnut',
-        data: { labels: Object.keys(counts.type), datasets: [{ data: Object.values(counts.type), backgroundColor: [darkPrimary, yellowPrimary, '#555', '#999', '#ccc'] }] },
+        data: { labels: Object.keys(counts.type), datasets: [{ data: Object.values(counts.type), backgroundColor: ['#121212', '#ffdb00', '#555', '#999', '#ccc'] }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
     });
 
-    // 3. Lojas (Barras Horizontais Pretas)
     charts.store = new Chart(document.getElementById('canvasStore'), {
         type: 'bar',
-        data: { labels: Object.keys(counts.store), datasets: [{ label: 'Total', data: Object.values(counts.store), backgroundColor: darkPrimary, borderRadius: 5 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: { labels: Object.keys(counts.store), datasets: [{ label: 'Total', data: Object.values(counts.store), backgroundColor: '#121212', borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
     });
 
-    // 4. Vendedores (Barras Vermelhas - Erro de Venda)
-    const topS = Object.entries(counts.sellerError).sort((a,b) => b[1] - a[1]);
+    const topS = Object.entries(counts.sellerError).sort((a,b) => b[1]-a[1]);
     charts.seller = new Chart(document.getElementById('canvasSellerError'), {
         type: 'bar',
-        data: { 
-            labels: topS.map(s => 'Vend. ' + s[0]), 
-            datasets: [{ label: 'Erros', data: topS.map(s => s[1]), backgroundColor: redPrimary, borderRadius: 5 }] 
-        },
-        options: { 
-            indexAxis: 'y', 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
-        }
+        data: { labels: topS.map(s => 'Vend. '+s[0]), datasets: [{ label: 'Erros', data: topS.map(s => s[1]), backgroundColor: '#e74c3c', borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } } }
     });
 
-    // Atualização de KPIs
     document.getElementById('kpiTotal').innerText = data.length;
-    document.getElementById('kpiErros').innerText = counts.totalErrosVenda;
+    document.getElementById('kpiErros').innerText = counts.totalErros;
     const mMot = Object.entries(counts.type).sort((a,b) => b[1]-a[1])[0];
     document.getElementById('kpiMotivo').innerText = mMot ? mMot[0] : "-";
     const mLj = Object.entries(counts.store).sort((a,b) => b[1]-a[1])[0];
