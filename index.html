@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Cacique V27 | BI Logística</title>
+    <title>Dashboard Cacique V30 | BI Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -23,14 +23,12 @@
         .card { border: none; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; }
         .card h5 { font-size: 0.8rem; font-weight: 800; color: #333; text-transform: uppercase; border-bottom: 3px solid var(--cacique-yellow); display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
         .kpi-card { border-top: 5px solid var(--cacique-yellow); min-height: 110px; display: flex; flex-direction: column; justify-content: center; }
-        .kpi-card.danger { border-top-color: var(--cacique-red); }
         .kpi-title { font-size: 0.7rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
         .kpi-value { font-size: 1.1rem; font-weight: 900; color: #121212; line-height: 1.1; }
         .filter-group { margin-bottom: 15px; }
         .filter-group label { font-size: 0.65rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 5px; display: block; text-transform: uppercase; }
         .form-select, .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; font-size: 0.8rem; border-radius: 8px; }
         .chart-container { position: relative; height: 280px; width: 100%; }
-        .sticky-sidebar { position: sticky; top: 20px; }
     </style>
 </head>
 <body>
@@ -38,18 +36,16 @@
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2 sidebar">
-            <div class="sticky-sidebar">
-                <div class="brand-area"><h1 class="brand-name">CACIQUE</h1><span class="brand-sub">Home Center | Logística</span></div>
-                <div class="filter-group"><label>Importar SQL.csv</label><input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv"></div>
-                <div id="controls" style="display: none;">
-                    <div class="row g-2">
-                        <div class="col-6"><div class="filter-group"><label>Início</label><input type="date" id="dateStart" class="form-control form-control-sm" onchange="applyFilters()"></div></div>
-                        <div class="col-6"><div class="filter-group"><label>Fim</label><input type="date" id="dateEnd" class="form-control form-control-sm" onchange="applyFilters()"></div></div>
-                    </div>
-                    <div class="filter-group"><label>Loja</label><select id="filterLoja" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
-                    <div class="filter-group"><label>Filtrar Diagnóstico</label><select id="filterFalha" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
-                    <button class="btn btn-sm btn-outline-warning w-100 mt-2" onclick="resetFilters()">LIMPAR TUDO</button>
+            <div class="brand-area"><h1 class="brand-name">CACIQUE</h1><span class="brand-sub">Home Center | Logística</span></div>
+            <div class="filter-group"><label>Importar SQL.csv</label><input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv"></div>
+            <div id="controls" style="display: none;">
+                <div class="row g-2">
+                    <div class="col-6"><div class="filter-group"><label>Início</label><input type="date" id="dateStart" class="form-control form-control-sm" onchange="applyFilters()"></div></div>
+                    <div class="col-6"><div class="filter-group"><label>Fim</label><input type="date" id="dateEnd" class="form-control form-control-sm" onchange="applyFilters()"></div></div>
                 </div>
+                <div class="filter-group"><label>Loja</label><select id="filterLoja" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
+                <div class="filter-group"><label>Filtrar Diagnóstico</label><select id="filterFalha" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
+                <button class="btn btn-sm btn-outline-warning w-100 mt-2" onclick="resetFilters()">LIMPAR TUDO</button>
             </div>
         </nav>
 
@@ -57,8 +53,8 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Ocorrências Filtradas</div><div id="kpiTotal" class="kpi-value">-</div></div></div>
                 <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Maior Gargalo</div><div id="kpiMotivo" class="kpi-value" style="font-size: 0.85rem; color: #d35400;">-</div></div></div>
-                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Loja Crítica</div><div id="kpiLoja" class="kpi-value" style="font-size: 0.9rem;">-</div></div></div>
-                <div class="col-md-3"><div class="card kpi-card danger p-3 text-center"><div class="kpi-title" style="color:var(--cacique-red)">Erros de Venda</div><div id="kpiErros" class="kpi-value" style="color:var(--cacique-red)">-</div></div></div>
+                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div id="kpiLojaTitle" class="kpi-title">Loja Crítica</div><div id="kpiLoja" class="kpi-value" style="font-size: 0.9rem;">-</div></div></div>
+                <div class="col-md-3"><div class="card kpi-card p-3 text-center" style="border-top-color: var(--cacique-red);"><div class="kpi-title" style="color:var(--cacique-red)">Erros de Venda</div><div id="kpiErros" class="kpi-value" style="color:var(--cacique-red)">-</div></div></div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -68,7 +64,7 @@
 
             <div class="row g-3">
                 <div class="col-md-6"><div class="card p-4"><h5>Volume x Erro (Por Loja)</h5><div class="chart-container"><canvas id="canvasStore"></canvas></div></div></div>
-                <div class="col-md-6"><div class="card p-4" style="border-right: 8px solid var(--cacique-dark)"><h5 style="color:var(--cacique-dark)">Top 5 Erros por Vendedor</h5><div class="chart-container"><canvas id="canvasSellerError"></canvas></div></div></div>
+                <div class="col-md-6"><div class="card p-4"><h5>Top 5 Erros por Vendedor</h5><div class="chart-container"><canvas id="canvasSellerError"></canvas></div></div></div>
             </div>
         </main>
     </div>
@@ -83,24 +79,26 @@ const TEXT_BLACK = '#121212';
 
 function fixText(text) {
     if (!text) return "";
-    return text.toString().trim().replace(/RECLAMA[\?]+O/gi, "RECLAMAÇÃO").replace(/SOLICITA[\?]+O/gi, "SOLICITAÇÃO")
-        .replace(/INFORMA[\?]+O/gi, "INFORMAÇÃO").replace(/LIGA[\?]+ES/gi, "LIGAÇÕES").replace(/ATEN[\?]+O/gi, "ATENÇÃO")
-        .replace(/N[\?]+O/gi, "NÃO").replace(/[\?]+/g, " ");
+    let clean = text.toString().trim();
+    clean = clean.replace(/RECLAMA[\?]+O/gi, "RECLAMAÇÃO")
+                 .replace(/SOLICITA[\?]+O/gi, "SOLICITAÇÃO")
+                 .replace(/INFORMA[\?]+O/gi, "INFORMAÇÃO")
+                 .replace(/ENDERE[\? ]+O/gi, "ENDEREÇO")
+                 .replace(/DIFEREN[\? ]+A/gi, "DIFERENÇA")
+                 .replace(/LIGA[\?]+ES/gi, "LIGAÇÕES")
+                 .replace(/ATEN[\?]+O/gi, "ATENÇÃO")
+                 .replace(/N[\?]+O/gi, "NÃO");
+    return clean.replace(/[\?]+/g, " ");
 }
 
-// CORREÇÃO DE SÉCULO PARA DATAS AA -> 20AA
 function parseDate(str) {
     if(!str) return null;
     const p = str.split('/');
     if(p.length < 3) return null;
-    
-    let dia = parseInt(p[0].includes(' ') ? p[0].split(' ')[0] : p[0]);
+    let dia = parseInt(p[0].trim());
     let mes = parseInt(p[1]) - 1;
     let ano = parseInt(p[2].split(' ')[0]);
-
-    // Se o ano tiver 2 dígitos (ex: 25), transforma em 2025
     if (ano < 100) ano += 2000;
-
     return new Date(ano, mes, dia);
 }
 
@@ -131,13 +129,11 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
 
 function populateFilters(data) {
     const lojas = [...new Set(data.map(i => i.LOJA))].filter(x => x).sort();
-    const falhas = [...new Set(data.map(i => i.DETALHEFALHA || i.DETALHE_FALHA || i.DETALLEFALHA || i.DETALLE_FALHA))].filter(x => x && x.trim() !== "").sort();
+    const falhas = [...new Set(data.map(i => i.DETALHEFALHA || i.DETALHE_FALHA))].filter(x => x && x.trim() !== "").sort();
     fillSelect('filterLoja', lojas, "TODAS AS LOJAS");
     fillSelect('filterFalha', falhas, "TODAS AS FALHAS");
-    
     const dates = data.map(i => parseDate(i.DATA)).filter(d => d instanceof Date && !isNaN(d));
     if(dates.length) {
-        // Agora o input date receberá 2025-XX-XX corretamente
         document.getElementById('dateStart').value = new Date(Math.min(...dates)).toISOString().split('T')[0];
         document.getElementById('dateEnd').value = new Date(Math.max(...dates)).toISOString().split('T')[0];
     }
@@ -156,12 +152,21 @@ function applyFilters() {
 
     const filtered = fullData.filter(row => {
         const rDate = parseDate(row.DATA);
-        const rFalha = row.DETALHEFALHA || row.DETALHE_FALHA || row.DETALLEFALHA || row.DETALLE_FALHA || "";
+        const rFalha = row.DETALHEFALHA || row.DETALHE_FALHA || "";
         const matchDate = (!rDate || (!dStart || rDate >= dStart) && (!dEnd || rDate <= dEnd));
         const matchL = (lSel === 'all' || row.LOJA === lSel);
         const matchF = (fSel === 'all' || rFalha === fSel);
         return matchDate && matchL && matchF;
     });
+    
+    // LÓGICA DE TÍTULO DINÂMICO V30
+    const kpiTitle = document.getElementById('kpiLojaTitle');
+    if (lSel !== 'all') {
+        kpiTitle.innerText = "Loja Observada";
+    } else {
+        kpiTitle.innerText = "Loja Crítica";
+    }
+
     renderDashboard(filtered);
 }
 
@@ -175,20 +180,13 @@ function renderDashboard(data) {
         const rDate = parseDate(row.DATA);
         const dDisplay = rDate ? rDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : null;
         const lj = row.LOJA || "N/A", vend = row.VENDEDOR || "N/A";
-        const fName = row.DETALHEFALHA || row.DETALHE_FALHA || row.DETALLEFALHA || row.DETALLE_FALHA || "";
+        const fName = row.DETALHEFALHA || row.DETALHE_FALHA || "";
         const isErro = (row['ERRO_VENDA?'] || row['ERRO_VENDA'] || "").toUpperCase().includes("SIM");
         
         if(dDisplay) counts.date[dDisplay] = (counts.date[dDisplay] || 0) + 1;
-        if(fName.trim() !== "") {
-            counts.falha[fName] = (counts.falha[fName] || 0) + 1;
-            totalDiagnosticados++;
-        }
+        if(fName.trim() !== "") { counts.falha[fName] = (counts.falha[fName] || 0) + 1; totalDiagnosticados++; }
         counts.storeVol[lj] = (counts.storeVol[lj] || 0) + 1;
-        if(isErro) { 
-            counts.storeErr[lj] = (counts.storeErr[lj] || 0) + 1;
-            counts.sellerError[vend] = (counts.sellerError[vend] || 0) + 1; 
-            counts.totalErros++; 
-        }
+        if(isErro) { counts.storeErr[lj] = (counts.storeErr[lj] || 0) + 1; counts.sellerError[vend] = (counts.sellerError[vend] || 0) + 1; counts.totalErros++; }
     });
 
     const totalOcorrencias = data.length;
@@ -196,26 +194,21 @@ function renderDashboard(data) {
 
     // 1. Tempo
     const sortedDates = Object.keys(counts.date).sort((a,b) => {
-        const [d1, m1] = a.split('/').map(Number);
-        const [d2, m2] = b.split('/').map(Number);
+        const [d1, m1] = a.split('/').map(Number); const [d2, m2] = b.split('/').map(Number);
         return m1 === m2 ? d1 - d2 : m1 - m2;
     });
     charts.time = new Chart(document.getElementById('canvasTime'), {
         type: 'line',
-        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: TEXT_BLACK, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: TEXT_BLACK }] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { datalabels: { anchor: 'end', align: 'top', color: TEXT_BLACK, font: { weight: 'bold' } } } }
+        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: TEXT_BLACK, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, scales: { y: { display: false, grace: '20%' }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', offset: 8, color: TEXT_BLACK, font: { weight: 'bold', size: 11 } } } }
     });
 
-    // 2. Ranking - RÓTULOS INTERNOS
+    // 2. Ranking
     const sortedFalhas = Object.entries(counts.falha).sort((a,b) => b[1] - a[1]).slice(0, 8);
     charts.falhas = new Chart(document.getElementById('canvasBarFalha'), {
         type: 'bar',
         data: { labels: sortedFalhas.map(f => f[0]), datasets: [{ label: 'Qtd', data: sortedFalhas.map(f => f[1]), backgroundColor: '#ffdb00', borderRadius: 5 }] },
-        options: { 
-            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { size: 9, weight: 'bold' } } } },
-            plugins: { legend: { display: false }, datalabels: { color: TEXT_BLACK, anchor: 'end', align: 'start', offset: 5, font: { weight: 'bold', size: 10 }, formatter: (val) => `${val} (${totalDiagnosticados > 0 ? ((val/totalDiagnosticados)*100).toFixed(0) : 0}%)` } }
-        }
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold', size: 9 } } } }, plugins: { legend: { display: false }, datalabels: { color: TEXT_BLACK, anchor: 'end', align: 'start', offset: 5, font: { weight: 'bold', size: 10 }, formatter: (val) => `${val} (${totalDiagnosticados > 0 ? ((val/totalDiagnosticados)*100).toFixed(0) : 0}%)` } } }
     });
 
     // 3. Volume x Erro
@@ -223,7 +216,7 @@ function renderDashboard(data) {
     charts.store = new Chart(document.getElementById('canvasStore'), {
         type: 'bar',
         data: { labels: storeLabels, datasets: [{ label: 'Volume', data: storeLabels.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00' }, { label: 'Erros', data: storeLabels.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
-        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 40 } }, scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } }, y: { display: false } }, plugins: { legend: { position: 'top', labels: { color: TEXT_BLACK, font: { weight: 'bold' } } }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : '#e74c3c', formatter: (val, ctx) => { if (!val) return ""; const total = ctx.dataset.label === 'Volume' ? totalOcorrencias : counts.totalErros; return `${val} (${total > 0 ? ((val/total)*100).toFixed(0) : 0}%)`; } } } }
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } }, y: { display: false, grace: '15%' } }, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : '#e74c3c' } } }
     });
 
     // 4. Vendedores
@@ -231,15 +224,21 @@ function renderDashboard(data) {
     charts.seller = new Chart(document.getElementById('canvasSellerError'), {
         type: 'bar',
         data: { labels: topS.map(s => s[0]), datasets: [{ label: 'Erros', data: topS.map(s => s[1]), backgroundColor: '#121212', borderRadius: 5 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { ticks: { color: TEXT_BLACK, font: { size: 9, weight: 'bold' } }, grid: { display: false } } }, plugins: { legend: { display: false }, datalabels: { color: '#ffffff', anchor: 'center', align: 'center', font: { weight: 'bold' }, formatter: (val) => `${val} (${counts.totalErros > 0 ? ((val/counts.totalErros)*100).toFixed(1) : 0}%)` } } }
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } } }, plugins: { legend: { display: false }, datalabels: { color: '#ffffff', anchor: 'center', align: 'center', font: { weight: 'bold' } } } }
     });
 
     document.getElementById('kpiTotal').innerText = totalOcorrencias;
-    const erroPct = totalOcorrencias > 0 ? ((counts.totalErros / totalOcorrencias) * 100).toFixed(1) : 0;
-    document.getElementById('kpiErros').innerText = `${counts.totalErros} (${erroPct}%)`;
+    document.getElementById('kpiErros').innerText = `${counts.totalErros} (${totalOcorrencias > 0 ? ((counts.totalErros/totalOcorrencias)*100).toFixed(1) : 0}%)`;
     const topFalha = Object.entries(counts.falha).sort((a,b) => b[1]-a[1])[0];
     document.getElementById('kpiMotivo').innerText = topFalha ? topFalha[0].substring(0, 25) : "-";
-    document.getElementById('kpiLoja').innerText = Object.entries(counts.storeErr).sort((a,b) => b[1]-a[1])[0]?.[0] || "-";
+    
+    // Ajuste do Valor do KPI de Loja
+    const lSel = document.getElementById('filterLoja').value;
+    if (lSel !== 'all') {
+        document.getElementById('kpiLoja').innerText = lSel;
+    } else {
+        document.getElementById('kpiLoja').innerText = Object.entries(counts.storeErr).sort((a,b) => b[1]-a[1])[0]?.[0] || "-";
+    }
 }
 </script>
 </body>
