@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Cacique | SQL</title>
+    <title>Dashboard Cacique V27 | BI Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -39,7 +39,7 @@
     <div class="row">
         <nav class="col-md-2 sidebar">
             <div class="sticky-sidebar">
-                <div class="brand-area"><h1 class="brand-name">CACIQUE</h1><span class="brand-sub">Home Center | SQL</span></div>
+                <div class="brand-area"><h1 class="brand-name">CACIQUE</h1><span class="brand-sub">Home Center | Logística</span></div>
                 <div class="filter-group"><label>Importar SQL.csv</label><input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv"></div>
                 <div id="controls" style="display: none;">
                     <div class="row g-2">
@@ -88,11 +88,20 @@ function fixText(text) {
         .replace(/N[\?]+O/gi, "NÃO").replace(/[\?]+/g, " ");
 }
 
+// CORREÇÃO DE SÉCULO PARA DATAS AA -> 20AA
 function parseDate(str) {
     if(!str) return null;
     const p = str.split('/');
-    const datePart = p[0].includes(' ') ? p[0].split(' ')[0] : p[0];
-    return p.length >= 3 ? new Date(p[2].split(' ')[0], p[1]-1, datePart) : null;
+    if(p.length < 3) return null;
+    
+    let dia = parseInt(p[0].includes(' ') ? p[0].split(' ')[0] : p[0]);
+    let mes = parseInt(p[1]) - 1;
+    let ano = parseInt(p[2].split(' ')[0]);
+
+    // Se o ano tiver 2 dígitos (ex: 25), transforma em 2025
+    if (ano < 100) ano += 2000;
+
+    return new Date(ano, mes, dia);
 }
 
 document.getElementById('csvInput').addEventListener('change', function(e) {
@@ -125,8 +134,10 @@ function populateFilters(data) {
     const falhas = [...new Set(data.map(i => i.DETALHEFALHA || i.DETALHE_FALHA || i.DETALLEFALHA || i.DETALLE_FALHA))].filter(x => x && x.trim() !== "").sort();
     fillSelect('filterLoja', lojas, "TODAS AS LOJAS");
     fillSelect('filterFalha', falhas, "TODAS AS FALHAS");
+    
     const dates = data.map(i => parseDate(i.DATA)).filter(d => d instanceof Date && !isNaN(d));
     if(dates.length) {
+        // Agora o input date receberá 2025-XX-XX corretamente
         document.getElementById('dateStart').value = new Date(Math.min(...dates)).toISOString().split('T')[0];
         document.getElementById('dateEnd').value = new Date(Math.max(...dates)).toISOString().split('T')[0];
     }
@@ -161,8 +172,8 @@ function renderDashboard(data) {
     let totalDiagnosticados = 0;
     
     data.forEach(row => {
-        const dMatch = row.DATA ? row.DATA.split(' ')[0] : null; 
-        const dDisplay = dMatch ? dMatch.substring(0, 5) : null; 
+        const rDate = parseDate(row.DATA);
+        const dDisplay = rDate ? rDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : null;
         const lj = row.LOJA || "N/A", vend = row.VENDEDOR || "N/A";
         const fName = row.DETALHEFALHA || row.DETALHE_FALHA || row.DETALLEFALHA || row.DETALLE_FALHA || "";
         const isErro = (row['ERRO_VENDA?'] || row['ERRO_VENDA'] || "").toUpperCase().includes("SIM");
@@ -192,34 +203,18 @@ function renderDashboard(data) {
     charts.time = new Chart(document.getElementById('canvasTime'), {
         type: 'line',
         data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: TEXT_BLACK, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: TEXT_BLACK }] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { datalabels: { anchor: 'end', align: 'top', color: TEXT_BLACK, font: { weight: 'bold' } } } }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { datalabels: { anchor: 'end', align: 'top', color: TEXT_BLACK, font: { weight: 'bold' } } } }
     });
 
-    // 2. Ranking de Falhas - RÓTULOS DENTRO DAS BARRAS
+    // 2. Ranking - RÓTULOS INTERNOS
     const sortedFalhas = Object.entries(counts.falha).sort((a,b) => b[1] - a[1]).slice(0, 8);
     charts.falhas = new Chart(document.getElementById('canvasBarFalha'), {
         type: 'bar',
-        data: { 
-            labels: sortedFalhas.map(f => f[0]), 
-            datasets: [{ label: 'Qtd', data: sortedFalhas.map(f => f[1]), backgroundColor: '#ffdb00', borderRadius: 5, barPercentage: 0.8 }] 
-        },
+        data: { labels: sortedFalhas.map(f => f[0]), datasets: [{ label: 'Qtd', data: sortedFalhas.map(f => f[1]), backgroundColor: '#ffdb00', borderRadius: 5 }] },
         options: { 
             indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            scales: { 
-                x: { display: false, grid: { display: false } }, 
-                y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { size: 9, weight: 'bold' } } } 
-            },
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    color: TEXT_BLACK,
-                    anchor: 'end', // Ancorado na ponta da barra
-                    align: 'start', // Alinhado para o início (dentro da barra)
-                    offset: 5,
-                    font: { weight: 'bold', size: 10 },
-                    formatter: (val) => `${val} (${totalDiagnosticados > 0 ? ((val/totalDiagnosticados)*100).toFixed(0) : 0}%)`
-                }
-            }
+            scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { size: 9, weight: 'bold' } } } },
+            plugins: { legend: { display: false }, datalabels: { color: TEXT_BLACK, anchor: 'end', align: 'start', offset: 5, font: { weight: 'bold', size: 10 }, formatter: (val) => `${val} (${totalDiagnosticados > 0 ? ((val/totalDiagnosticados)*100).toFixed(0) : 0}%)` } }
         }
     });
 
@@ -228,7 +223,7 @@ function renderDashboard(data) {
     charts.store = new Chart(document.getElementById('canvasStore'), {
         type: 'bar',
         data: { labels: storeLabels, datasets: [{ label: 'Volume', data: storeLabels.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00' }, { label: 'Erros', data: storeLabels.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
-        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 40 } }, scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } }, y: { display: false, grace: '30%' } }, plugins: { legend: { position: 'top', labels: { color: TEXT_BLACK, font: { weight: 'bold' } } }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : '#e74c3c', formatter: (val, ctx) => { if (!val) return ""; const total = ctx.dataset.label === 'Volume' ? totalOcorrencias : counts.totalErros; return `${val} (${total > 0 ? ((val/total)*100).toFixed(0) : 0}%)`; } } } }
+        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 40 } }, scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } }, y: { display: false } }, plugins: { legend: { position: 'top', labels: { color: TEXT_BLACK, font: { weight: 'bold' } } }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : '#e74c3c', formatter: (val, ctx) => { if (!val) return ""; const total = ctx.dataset.label === 'Volume' ? totalOcorrencias : counts.totalErros; return `${val} (${total > 0 ? ((val/total)*100).toFixed(0) : 0}%)`; } } } }
     });
 
     // 4. Vendedores
