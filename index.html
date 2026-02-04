@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Cacique V30 | BI Logística</title>
+    <title>Dashboard Cacique V31 | BI Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -22,9 +22,10 @@
         .brand-sub { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
         .card { border: none; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; }
         .card h5 { font-size: 0.8rem; font-weight: 800; color: #333; text-transform: uppercase; border-bottom: 3px solid var(--cacique-yellow); display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
-        .kpi-card { border-top: 5px solid var(--cacique-yellow); min-height: 110px; display: flex; flex-direction: column; justify-content: center; }
-        .kpi-title { font-size: 0.7rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
-        .kpi-value { font-size: 1.1rem; font-weight: 900; color: #121212; line-height: 1.1; }
+        .kpi-card { border-top: 5px solid var(--cacique-yellow); min-height: 110px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .kpi-title { font-size: 0.7rem; font-weight: 700; color: #666; padding: 5px; text-transform: uppercase; transition: all 0.3s ease; border-radius: 4px; }
+        .kpi-observed { background-color: var(--cacique-yellow); color: #121212 !important; font-weight: 800; }
+        .kpi-value { font-size: 1.1rem; font-weight: 900; color: #121212; line-height: 1.1; margin-top: 5px; }
         .filter-group { margin-bottom: 15px; }
         .filter-group label { font-size: 0.65rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 5px; display: block; text-transform: uppercase; }
         .form-select, .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; font-size: 0.8rem; border-radius: 8px; }
@@ -159,12 +160,14 @@ function applyFilters() {
         return matchDate && matchL && matchF;
     });
     
-    // LÓGICA DE TÍTULO DINÂMICO V30
-    const kpiTitle = document.getElementById('kpiLojaTitle');
+    // TÍTULO E ESTILO DINÂMICO V31
+    const titleEl = document.getElementById('kpiLojaTitle');
     if (lSel !== 'all') {
-        kpiTitle.innerText = "Loja Observada";
+        titleEl.innerText = "Loja Observada";
+        titleEl.classList.add('kpi-observed');
     } else {
-        kpiTitle.innerText = "Loja Crítica";
+        titleEl.innerText = "Loja Crítica";
+        titleEl.classList.remove('kpi-observed');
     }
 
     renderDashboard(filtered);
@@ -179,10 +182,8 @@ function renderDashboard(data) {
     data.forEach(row => {
         const rDate = parseDate(row.DATA);
         const dDisplay = rDate ? rDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : null;
-        const lj = row.LOJA || "N/A", vend = row.VENDEDOR || "N/A";
-        const fName = row.DETALHEFALHA || row.DETALHE_FALHA || "";
+        const lj = row.LOJA || "N/A", vend = row.VENDEDOR || "N/A", fName = row.DETALHEFALHA || row.DETALHE_FALHA || "";
         const isErro = (row['ERRO_VENDA?'] || row['ERRO_VENDA'] || "").toUpperCase().includes("SIM");
-        
         if(dDisplay) counts.date[dDisplay] = (counts.date[dDisplay] || 0) + 1;
         if(fName.trim() !== "") { counts.falha[fName] = (counts.falha[fName] || 0) + 1; totalDiagnosticados++; }
         counts.storeVol[lj] = (counts.storeVol[lj] || 0) + 1;
@@ -192,7 +193,7 @@ function renderDashboard(data) {
     const totalOcorrencias = data.length;
     Object.values(charts).forEach(c => c && c.destroy());
 
-    // 1. Tempo
+    // 1. Evolução
     const sortedDates = Object.keys(counts.date).sort((a,b) => {
         const [d1, m1] = a.split('/').map(Number); const [d2, m2] = b.split('/').map(Number);
         return m1 === m2 ? d1 - d2 : m1 - m2;
@@ -232,13 +233,8 @@ function renderDashboard(data) {
     const topFalha = Object.entries(counts.falha).sort((a,b) => b[1]-a[1])[0];
     document.getElementById('kpiMotivo').innerText = topFalha ? topFalha[0].substring(0, 25) : "-";
     
-    // Ajuste do Valor do KPI de Loja
     const lSel = document.getElementById('filterLoja').value;
-    if (lSel !== 'all') {
-        document.getElementById('kpiLoja').innerText = lSel;
-    } else {
-        document.getElementById('kpiLoja').innerText = Object.entries(counts.storeErr).sort((a,b) => b[1]-a[1])[0]?.[0] || "-";
-    }
+    document.getElementById('kpiLoja').innerText = (lSel !== 'all') ? lSel : (Object.entries(counts.storeErr).sort((a,b) => b[1]-a[1])[0]?.[0] || "-");
 }
 </script>
 </body>
