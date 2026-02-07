@@ -13,7 +13,7 @@
             --cacique-yellow: #ffdb00;
             --cacique-dark: #121212;
             --cacique-sidebar: #1e1e1e;
-            --cacique-red: #e74c3c;
+            --cacique-red: #c0392b;
         }
         body { background-color: var(--cacique-dark); font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; }
         .sidebar { background: var(--cacique-sidebar); min-height: 100vh; padding: 30px 20px; border-right: 1px solid #333; }
@@ -21,15 +21,15 @@
         .brand-name { color: var(--cacique-yellow); font-weight: 900; font-size: 1.6rem; margin: 0; letter-spacing: -1px; }
         .brand-sub { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
         .card { border: none; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; }
-        .card h5 { font-size: 0.8rem; font-weight: 800; color: #333; text-transform: uppercase; border-bottom: 3px solid var(--cacique-yellow); display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
+        .card h5 { font-size: 0.85rem; font-weight: 800; color: #333; text-transform: uppercase; border-bottom: 3px solid var(--cacique-yellow); display: inline-block; margin-bottom: 5px; padding-bottom: 5px; }
         .kpi-card { border-top: 5px solid var(--cacique-yellow); min-height: 110px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .kpi-title { font-size: 0.7rem; font-weight: 700; color: #666; padding: 5px; text-transform: uppercase; transition: all 0.3s ease; border-radius: 4px; }
+        .kpi-title { font-size: 0.75rem; font-weight: 700; color: #666; padding: 5px; text-transform: uppercase; transition: all 0.3s ease; border-radius: 4px; }
         .kpi-observed { background-color: var(--cacique-yellow); color: #121212 !important; font-weight: 800; }
-        .kpi-value { font-size: 1.1rem; font-weight: 900; color: #121212; line-height: 1.1; margin-top: 5px; }
+        .kpi-value { font-size: 1.2rem; font-weight: 900; color: #121212; line-height: 1.1; margin-top: 5px; }
         .filter-group { margin-bottom: 15px; }
-        .filter-group label { font-size: 0.65rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 5px; display: block; text-transform: uppercase; }
-        .form-select, .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; font-size: 0.8rem; border-radius: 8px; }
-        .chart-container { position: relative; height: 280px; width: 100%; }
+        .filter-group label { font-size: 0.7rem; font-weight: 700; color: var(--cacique-yellow); margin-bottom: 5px; display: block; text-transform: uppercase; }
+        .form-select, .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; font-size: 0.85rem; border-radius: 8px; }
+        .chart-container { position: relative; height: 260px; width: 100%; }
     </style>
 </head>
 <body>
@@ -53,14 +53,14 @@
         <main class="col-md-10 px-4 py-4">
             <div class="row g-3 mb-4">
                 <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Ocorrências Filtradas</div><div id="kpiTotal" class="kpi-value">-</div></div></div>
-                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Maior Gargalo</div><div id="kpiMotivo" class="kpi-value" style="font-size: 0.85rem; color: #d35400;">-</div></div></div>
-                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div id="kpiLojaTitle" class="kpi-title">Loja Crítica</div><div id="kpiLoja" class="kpi-value" style="font-size: 0.9rem;">-</div></div></div>
+                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div class="kpi-title">Maior Gargalo</div><div id="kpiMotivo" class="kpi-value" style="font-size: 0.85rem;">-</div></div></div>
+                <div class="col-md-3"><div class="card kpi-card p-3 text-center"><div id="kpiLojaTitle" class="kpi-title">Loja Crítica</div><div id="kpiLoja" class="kpi-value">-</div></div></div>
                 <div class="col-md-3"><div class="card kpi-card p-3 text-center" style="border-top-color: var(--cacique-red);"><div class="kpi-title" style="color:var(--cacique-red)">Erros de Venda</div><div id="kpiErros" class="kpi-value" style="color:var(--cacique-red)">-</div></div></div>
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-7"><div class="card p-4"><h5>Evolução Temporal</h5><div class="chart-container" style="height:250px;"><canvas id="canvasTime"></canvas></div></div></div>
-                <div class="col-md-5"><div class="card p-4"><h5>Ranking de Diagnósticos</h5><div class="chart-container" style="height:250px;"><canvas id="canvasBarFalha"></canvas></div></div></div>
+                <div class="col-md-7"><div class="card p-4"><h5>Evolução Temporal</h5><div class="chart-container"><canvas id="canvasTime"></canvas></div></div></div>
+                <div class="col-md-5"><div class="card p-4"><h5>Ranking de Diagnósticos</h5><div class="chart-container"><canvas id="canvasBarFalha"></canvas></div></div></div>
             </div>
 
             <div class="row g-3">
@@ -73,22 +73,18 @@
 
 <script>
 Chart.register(ChartDataLabels);
-
 let fullData = [];
 let charts = {};
 const TEXT_BLACK = '#121212';
+const TEXT_RED = '#c0392b';
 
 function fixText(text) {
     if (!text) return "";
     let clean = text.toString().trim();
-    clean = clean.replace(/RECLAMA[\?]+O/gi, "RECLAMAÇÃO")
-                 .replace(/SOLICITA[\?]+O/gi, "SOLICITAÇÃO")
-                 .replace(/INFORMA[\?]+O/gi, "INFORMAÇÃO")
-                 .replace(/ENDERE[\? ]+O/gi, "ENDEREÇO")
-                 .replace(/DIFEREN[\? ]+A/gi, "DIFERENÇA")
-                 .replace(/LIGA[\?]+ES/gi, "LIGAÇÕES")
-                 .replace(/ATEN[\?]+O/gi, "ATENÇÃO")
-                 .replace(/N[\?]+O/gi, "NÃO");
+    clean = clean.replace(/RECLAMA[\?]+O/gi, "RECLAMAÇÃO").replace(/SOLICITA[\?]+O/gi, "SOLICITAÇÃO")
+                 .replace(/INFORMA[\?]+O/gi, "INFORMAÇÃO").replace(/ENDERE[\? ]+O/gi, "ENDEREÇO")
+                 .replace(/DIFEREN[\? ]+A/gi, "DIFERENÇA").replace(/LIGA[\?]+ES/gi, "LIGAÇÕES")
+                 .replace(/ATEN[\?]+O/gi, "ATENÇÃO").replace(/N[\?]+O/gi, "NÃO");
     return clean.replace(/[\?]+/g, " ");
 }
 
@@ -121,6 +117,7 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
                     return cleanRow;
                 });
                 populateFilters(fullData);
+                setDefaultMonth(); // NOVA LÓGICA V34
                 document.getElementById('controls').style.display = 'block';
                 applyFilters();
             }
@@ -128,16 +125,21 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
     };
 });
 
+function setDefaultMonth() {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    // Formata para o input date (YYYY-MM-DD)
+    document.getElementById('dateStart').value = firstDay.toISOString().split('T')[0];
+    document.getElementById('dateEnd').value = lastDay.toISOString().split('T')[0];
+}
+
 function populateFilters(data) {
     const lojas = [...new Set(data.map(i => i.LOJA))].filter(x => x).sort();
     const falhas = [...new Set(data.map(i => i.DETALHEFALHA || i.DETALHE_FALHA))].filter(x => x && x.trim() !== "").sort();
     fillSelect('filterLoja', lojas, "TODAS AS LOJAS");
     fillSelect('filterFalha', falhas, "TODAS AS FALHAS");
-    const dates = data.map(i => parseDate(i.DATA)).filter(d => d instanceof Date && !isNaN(d));
-    if(dates.length) {
-        document.getElementById('dateStart').value = new Date(Math.min(...dates)).toISOString().split('T')[0];
-        document.getElementById('dateEnd').value = new Date(Math.max(...dates)).toISOString().split('T')[0];
-    }
 }
 
 function fillSelect(id, list, first) {
@@ -168,11 +170,19 @@ function applyFilters() {
         titleEl.innerText = "Loja Crítica";
         titleEl.classList.remove('kpi-observed');
     }
-
     renderDashboard(filtered);
 }
 
-function resetFilters() { populateFilters(fullData); applyFilters(); }
+function resetFilters() { 
+    const dates = fullData.map(i => parseDate(i.DATA)).filter(d => d instanceof Date && !isNaN(d));
+    if(dates.length) {
+        document.getElementById('dateStart').value = new Date(Math.min(...dates)).toISOString().split('T')[0];
+        document.getElementById('dateEnd').value = new Date(Math.max(...dates)).toISOString().split('T')[0];
+    }
+    document.getElementById('filterLoja').value = 'all';
+    document.getElementById('filterFalha').value = 'all';
+    applyFilters(); 
+}
 
 function renderDashboard(data) {
     const counts = { date: {}, falha: {}, storeVol: {}, storeErr: {}, sellerError: {}, totalErros: 0 };
@@ -199,8 +209,8 @@ function renderDashboard(data) {
     });
     charts.time = new Chart(document.getElementById('canvasTime'), {
         type: 'line',
-        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: TEXT_BLACK, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointRadius: 5 }] },
-        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, scales: { y: { display: false, grace: '20%' }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', offset: 8, color: TEXT_BLACK, font: { weight: 'bold', size: 11 } } } }
+        data: { labels: sortedDates, datasets: [{ label: 'Ocorrências', data: sortedDates.map(d => counts.date[d]), borderColor: TEXT_BLACK, backgroundColor: 'rgba(255, 219, 0, 0.4)', fill: true, tension: 0.4, pointRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 25 } }, scales: { y: { display: false, grace: '25%' }, x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold' } } } }, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', offset: 5, color: TEXT_BLACK, font: { weight: 'bold', size: 11 } } } }
     });
 
     // 2. Ranking
@@ -211,60 +221,53 @@ function renderDashboard(data) {
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold', size: 9 } } } }, plugins: { legend: { display: false }, datalabels: { color: TEXT_BLACK, anchor: 'end', align: 'start', offset: 5, font: { weight: 'bold', size: 10 }, formatter: (val) => `${val} (${totalDiagnosticados > 0 ? ((val/totalDiagnosticados)*100).toFixed(0) : 0}%)` } } }
     });
 
-    // 3. Volume x Erro - RESTAURADO %
+    // 3. Volume x Erro - ALTA LEITURA V34
     const storeLabels = Object.keys(counts.storeVol).sort();
     charts.store = new Chart(document.getElementById('canvasStore'), {
         type: 'bar',
         data: { labels: storeLabels, datasets: [{ label: 'Volume', data: storeLabels.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00' }, { label: 'Erros', data: storeLabels.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
         options: { 
             responsive: true, maintainAspectRatio: false, 
-            scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } }, y: { display: false, grace: '20%' } }, 
+            scales: { x: { ticks: { color: TEXT_BLACK, font: { weight: '900', size: 10 } }, grid: { display: false } }, y: { display: false, grace: '35%' } }, 
             plugins: { 
-                legend: { position: 'top' }, 
+                legend: { position: 'top', labels: { font: { weight: 'bold' } } }, 
                 datalabels: { 
-                    anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, 
-                    color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : '#e74c3c',
+                    anchor: 'end', align: 'top', font: { weight: '900', size: 11 }, 
+                    color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : TEXT_RED,
                     formatter: (val, ctx) => {
-                        const total = ctx.dataset.label === 'Volume' ? totalOcorrencias : counts.totalErros;
-                        const pct = total > 0 ? ((val/total)*100).toFixed(0) : 0;
-                        return `${val} (${pct}%)`;
+                        const total = ctx.dataset.label === 'Volume' ? (totalOcorrencias || 1) : (counts.totalErros || 1);
+                        return `${val} (${((val/total)*100).toFixed(0)}%)`;
                     }
                 } 
             } 
         }
     });
 
-    // 4. Vendedores - RESTAURADO %
+    // 4. Vendedores - ALTA LEITURA V34
     const topS = Object.entries(counts.sellerError).sort((a,b) => b[1]-a[1]).slice(0, 5);
     charts.seller = new Chart(document.getElementById('canvasSellerError'), {
         type: 'bar',
         data: { labels: topS.map(s => s[0]), datasets: [{ label: 'Erros', data: topS.map(s => s[1]), backgroundColor: '#121212', borderRadius: 5 }] },
         options: { 
             indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
-            scales: { x: { display: false }, y: { ticks: { color: TEXT_BLACK, font: { weight: 'bold' } }, grid: { display: false } } }, 
+            scales: { x: { display: false }, y: { ticks: { color: TEXT_BLACK, font: { weight: '900', size: 10 } }, grid: { display: false } } }, 
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { 
-                    color: '#ffffff', anchor: 'center', align: 'center', font: { weight: 'bold' },
-                    formatter: (val) => {
-                        const pct = counts.totalErros > 0 ? ((val/counts.totalErros)*100).toFixed(1) : 0;
-                        return `${val} (${pct}%)`;
-                    }
+                    color: '#ffffff', anchor: 'center', align: 'center', font: { weight: '900', size: 11 },
+                    formatter: (val) => `${val} (${counts.totalErros > 0 ? ((val/counts.totalErros)*100).toFixed(1) : 0}%)`
                 } 
             } 
         }
     });
 
-    // Atualização dos KPIs
     document.getElementById('kpiTotal').innerText = totalOcorrencias;
     document.getElementById('kpiErros').innerText = `${counts.totalErros} (${totalOcorrencias > 0 ? ((counts.totalErros/totalOcorrencias)*100).toFixed(1) : 0}%)`;
     const topFalha = Object.entries(counts.falha).sort((a,b) => b[1]-a[1])[0];
     document.getElementById('kpiMotivo').innerText = topFalha ? topFalha[0].substring(0, 25) : "-";
-    
     const lSel = document.getElementById('filterLoja').value;
     document.getElementById('kpiLoja').innerText = (lSel !== 'all') ? lSel : (Object.entries(counts.storeErr).sort((a,b) => b[1]-a[1])[0]?.[0] || "-");
 }
 </script>
 </body>
 </html>
-
