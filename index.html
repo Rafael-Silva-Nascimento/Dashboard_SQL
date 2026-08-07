@@ -221,12 +221,12 @@ function renderDashboard(data) {
     });
     const sortedF = Object.entries(counts.falha).sort((a,b) => b[1]-a[1]).slice(0, 8);
     charts.falhas = new Chart(document.getElementById('canvasBarFalha'), {
-        type: 'bar', data: { labels: sortedF.map(f => f[0]), datasets: [{ data: sortedF.map(f => f[1]), backgroundColor: '#ffdb00', borderColor: '#121212', borderColor: '#121212', borderRadius: 5 }] },
+        type: 'bar', data: { labels: sortedF.map(f => f[0]), datasets: [{ data: sortedF.map(f => f[1]), backgroundColor: '#ffdb00', borderColor: '#121212', borderWidth: 2, borderRadius: 5 }] },
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: 'bold', size: 9 } } } }, plugins: { legend: { display: false }, datalabels: { font: { weight: 'bold' }, formatter: (v) => `${v} (${totalDiag > 0 ? ((v/totalDiag)*100).toFixed(0) : 0}%)` } } }
     });
     const storeL = Object.keys(counts.storeVol).sort();
     charts.store = new Chart(document.getElementById('canvasStore'), {
-        type: 'bar', data: { labels: storeL, datasets: [{ label: 'Volume', data: storeL.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00' },borderColor: '#121212', borderWidth: 2 { label: 'Erros', data: storeL.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
+        type: 'bar', data: { labels: storeL, datasets: [{ label: 'Volume', data: storeL.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00', borderColor: '#121212', borderWidth: 2 } , { label: 'Erros', data: storeL.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
         options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: '900', size: 10 } } }, y: { display: false, grace: '35%' } }, plugins: { datalabels: { anchor: 'end', align: 'top', font: { weight: '900', size: 11 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK : TEXT_RED, formatter: (v, ctx) => `${v} (${((v/(ctx.dataset.label === 'Volume' ? data.length : (counts.totalErros || 1)))*100).toFixed(0)}%)` } } }
     });
     const topS = Object.entries(counts.sellerError).sort((a,b) => b[1]-a[1]).slice(0, 5);
