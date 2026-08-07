@@ -11,7 +11,7 @@
     <style>
         :root { --cacique-yellow: #ffdb00; --cacique-dark: #121212; --cacique-sidebar: #1e1e1e; --cacique-red: #c0392b; }
         body { background-color: var(--cacique-dark); font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; }
-        .sidebar { background: var(--cacique-sidebar); min-height: 100vh; padding: 30px 20px; border-right: 1px solid #333; display: flex; flex-direction: column; position: sticky; top: 0; }
+        .sidebar { background: var(--cacique-sidebar); min-height: 100vh; padding: 30px 20px; borderColor: TEXT_BLACK ;border-right: 1px solid #333; display: flex; flex-direction: column; position: sticky; top: 0; }
         .brand-area { text-align: center; margin-bottom: 30px; }
         .brand-name { color: var(--cacique-yellow); font-weight: 900; font-size: 1.6rem; margin: 0; letter-spacing: -1px; }
         .card { border: none; border-radius: 15px; background: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; }
@@ -57,7 +57,7 @@
         <nav class="col-md-2 sidebar">
             <div>
                 <div class="brand-area"><h1 class="brand-name">CACIQUE</h1><span style="font-size:0.6rem; color:#888;">HOME CENTER | SQL</span></div>
-                <div class="mb-3"><label style="font-size:0.7rem; color:var(--cacique-yellow);">IMPORTAR SQL.CSV</label><input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv"></div>
+                <div class="mb-3"><label style="font-size:0.7rem; color:var(--cacique-yellow);">IMPORTAR ARQUIVO.CSV</label><input type="file" id="csvInput" class="form-control form-control-sm" accept=".csv"></div>
                 <div id="controls" style="display: none;">
                     <div class="row g-2 mb-3">
                         <div class="col-6"><label style="font-size:0.6rem; color:var(--cacique-yellow);">INÍCIO</label><input type="date" id="dateStart" class="form-control form-control-sm" onchange="applyFilters()"></div>
@@ -65,7 +65,7 @@
                     </div>
                     <div class="mb-3"><label style="font-size:0.7rem; color:var(--cacique-yellow);">LOJA</label><select id="filterLoja" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
                     <div class="mb-3"><label style="font-size:0.7rem; color:var(--cacique-yellow);">DIAGNÓSTICO</label><select id="filterFalha" class="form-select form-select-sm" onchange="applyFilters()"></select></div>
-                    <button class="btn btn-sm btn-outline-warning w-100" onclick="resetFilters()">LIMPAR TUDO</button>
+                    <button class="btn btn-sm btn-outline-warning w-100" onclick="resetFilters()">LIMPAR</button>
                 </div>
             </div>
             <div class="sidebar-footer">Todos os direitos reservados a<br><strong>Rafael S. Nascimento</strong></div>
@@ -80,13 +80,13 @@
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-7"><div class="card p-4"><h5>Evolução Temporal</h5><div class="chart-container"><canvas id="canvasTime"></canvas></div></div></div>
-                <div class="col-md-5"><div class="card p-4"><h5>Ranking de Diagnósticos</h5><div class="chart-container"><canvas id="canvasBarFalha"></canvas></div></div></div>
+                <div class="col-md-7"><div class="card p-4"><h5>EVOLUÇÃO TEMPORAL</h5><div class="chart-container"><canvas id="canvasTime"></canvas></div></div></div>
+                <div class="col-md-5"><div class="card p-4"><h5>PRINCIPAIS ERROS</h5><div class="chart-container"><canvas id="canvasBarFalha"></canvas></div></div></div>
             </div>
 
             <div class="row g-3">
-                <div class="col-md-6"><div class="card p-4"><h5>Volume x Erro (Por Loja)</h5><div class="chart-container"><canvas id="canvasStore"></canvas></div></div></div>
-                <div class="col-md-6"><div class="card p-4"><h5>Top 5 Erros por Vendedor</h5><div class="chart-container"><canvas id="canvasSellerError"></canvas></div></div></div>
+                <div class="col-md-6"><div class="card p-4"><h5>VOLUME vs ERRO</h5><div class="chart-container"><canvas id="canvasStore"></canvas></div></div></div>
+                <div class="col-md-6"><div class="card p-4"><h5>TOP 5</h5><div class="chart-container"><canvas id="canvasSellerError"></canvas></div></div></div>
             </div>
         </main>
     </div>
@@ -114,7 +114,7 @@ function parseDate(str) {
 document.getElementById('csvInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
+    const reader = new     FileReader();
     reader.readAsText(file, "ISO-8859-1");
     reader.onload = function(event) {
         Papa.parse(event.target.result, {
