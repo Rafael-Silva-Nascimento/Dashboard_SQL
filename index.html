@@ -232,7 +232,7 @@ function renderDashboard(data) {
     const topS = Object.entries(counts.sellerError).sort((a,b) => b[1]-a[1]).slice(0, 5);
     charts.seller = new Chart(document.getElementById('canvasSellerError'), {
         type: 'bar', data: { labels: topS.map(s => s[0]), datasets: [{ data: topS.map(s => s[1]), backgroundColor: '#121212', borderRadius: 5 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, onClick: (e, el) => { if(el.length > 0) openModal(topS[el[0].index][0]); }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: TEXT_BLACK, font: { weight: '900', size: 10 } } } }, plugins: { legend: { display: false }, datalabels: { color: '#000000', font: { weight: '900', size: 11 }, formatter: (v) => `${v} (${counts.totalErros > 0 ? ((v/counts.totalErros)*100).toFixed(1) : 0}%)` } } }
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, onClick: (e, el) => { if(el.length > 0) openModal(topS[el[0].index][0]); }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: '#000000', font: { weight: '900', size: 10 } } } }, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: { weight: '900', size: 11 }, formatter: (v) => `${v} (${counts.totalErros > 0 ? ((v/counts.totalErros)*100).toFixed(1) : 0}%)` } } }
     });
     document.getElementById('kpiTotal').innerText = data.length;
     document.getElementById('kpiErros').innerText = `${counts.totalErros} (${data.length > 0 ? ((counts.totalErros/data.length)*100).toFixed(1) : 0}%)`;
