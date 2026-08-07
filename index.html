@@ -227,7 +227,7 @@ function renderDashboard(data) {
     const storeL = Object.keys(counts.storeVol).sort();
     charts.store = new Chart(document.getElementById('canvasStore'), {
         type: 'bar', data: { labels: storeL, datasets: [{ label: 'Volume', data: storeL.map(l => counts.storeVol[l]), backgroundColor: '#ffdb00', borderColor: '#121212', borderWidth: 4 } , { label: 'Erros', data: storeL.map(l => counts.storeErr[l] || 0), backgroundColor: '#e74c3c' }] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { color: '#000000' , font: { weight: '900', size: 10 } } }, y: { display: false, grace: '35%' } }, plugins: { datalabels: { anchor: 'end', align: 'top', font: { weight: '900', size: 11 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK, formatter: (v, ctx) => `${v} (${((v/(ctx.dataset.label === 'Volume' ? data.length : (counts.totalErros || 1)))*100).toFixed(0)}%)` } } }
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { color: '#000000' , font: { weight: '900', size: 10 } } }, y: { display: false, grace: '35%' } }, plugins: { datalabels: { anchor: 'end', align: 'top', font: { weight: '900', size: 11 }, color: (ctx) => ctx.dataset.label === 'Volume' ? TEXT_BLACK:TEXT_BLACK , formatter: (v, ctx) => `${v} (${((v/(ctx.dataset.label === 'Volume' ? data.length : (counts.totalErros || 1)))*100).toFixed(0)}%)` } } }
     });
     const topS = Object.entries(counts.sellerError).sort((a,b) => b[1]-a[1]).slice(0, 5);
     charts.seller = new Chart(document.getElementById('canvasSellerError'), {
